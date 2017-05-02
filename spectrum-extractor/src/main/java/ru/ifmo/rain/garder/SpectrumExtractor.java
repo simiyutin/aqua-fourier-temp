@@ -31,9 +31,9 @@ public class SpectrumExtractor implements PitchDetectionHandler {
     final List<float[]> amplitudes = new ArrayList<>();
     final List<Double> pitches = new ArrayList<>();
 
-    void run(String filename) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+    double[][] getRawData(String filename) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         File audioFile = new File(filename);
-        PrintWriter pw = new PrintWriter(filename.substring(0, filename.length() - 4) + "-spectrum.csv");
+
 
         AudioDispatcher dispatcher = AudioDispatcherFactory.fromFile(audioFile, bufferSize, overlap);
         AudioFormat format = AudioSystem.getAudioFileFormat(audioFile).getFormat();
@@ -49,19 +49,14 @@ public class SpectrumExtractor implements PitchDetectionHandler {
         }
 
         int n = amplitudes.get(0).length;
-        pw.print("pitch");
-        for (int i = 0; i < n; i++) {
-            pw.print(",a" + i);
-        }
-        pw.println();
+        double[][] data = new double[amplitudes.size()][n + 1];
         for (int i = 0; i < amplitudes.size(); i++) {
-            pw.printf("%.3f", pitches.get(i));
-            for (float a : amplitudes.get(i)) {
-                pw.printf(",%.3f", a);
+            data[i][0] = pitches.get(i);
+            for (int j = 0; j < n; j++) {
+                data[i][j + 1] = amplitudes.get(i)[j];
             }
-            pw.println();
         }
-        pw.close();
+        return data;
     }
 
     @Override
@@ -98,9 +93,27 @@ public class SpectrumExtractor implements PitchDetectionHandler {
 
     public static void main(String[] arg) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         if (arg.length != 1) {
-            System.out.println("Usage: java -jar ru.ifmo.rain.garder.SpectrumExtractor.jar <filename.wav>");
+            System.out.println("Usage: ./run.sh <filename.wav>");
             return;
         }
-        new SpectrumExtractor().run(arg[0]);
+        String filename = arg[0];
+        double[][] data = new SpectrumExtractor().getRawData(filename);
+
+        PrintWriter pw = new PrintWriter(filename.substring(0, filename.length() - 4) + "-spectrum.csv");
+        pw.print("pitch");
+        for (int i = 0; i + 1 < data[0].length; i++) {
+            pw.print(",a" + i);
+        }
+        pw.println();
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[i].length; j++) {
+                if (j != 0) {
+                    pw.print(",");
+                }
+                pw.printf("%.3f", data[i][j]);
+            }
+            pw.println();
+        }
+        pw.close();
     }
 }
