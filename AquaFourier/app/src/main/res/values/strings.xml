@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Aqua Fourier</string>
+
+    <string name="empty">""</string>
+    <string name="measure_temperature">Measure tempterature</string>
+    <string name="init_message">Bring the phone near the running water</string>
+    <string name="recording">Recording…</string>
+    <string name="processing">Processing…</string>
+</resources>
