@@ -44,10 +44,11 @@ public class Main {
             int filesProcessed = 0;
             if (directory.isDirectory()) {
                 for (String sample : directory.list()) {
-                    if (filesProcessed++ > maxFiles) {
-                        break;
-                    }
+
                     if (sample.endsWith(".wav")) {
+                        if (filesProcessed++ > maxFiles) {
+                            break;
+                        }
                         System.out.println(sample);
                         File sampleFile = new File(directory, sample);
                         List<Double> features = FeatureExtractor.extract(sampleFile, sampleRate, bufferSize, overlap);
