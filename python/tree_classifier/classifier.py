@@ -4,6 +4,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVR
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
+from sklearn.externals import joblib
 import os
 
 
@@ -43,7 +44,7 @@ def avgdiff(labels_test, labels_predict):
 def make_classification(path):
     classifier = RandomForestClassifier(n_estimators=50, criterion='entropy')
     metric = avgdiff
-    return predict(path, classifier, metric)
+    return predict(path, classifier, metric), classifier
 
 
 def make_regression(path):
@@ -57,13 +58,16 @@ def do_work(worker):
     files = os.listdir(dir)
     min_error = np.inf
     best_file = None
+    best_cls = None
     for file in files:
-        new_error = worker(dir + file)
+        new_error, cls = worker(dir + file)
         print('file: {}\naverage error = {}'.format(file, new_error))
         if new_error < min_error:
             best_file = file
             min_error = new_error
+            best_cls = cls
 
+    joblib.dump(best_cls, 'random_forest_classifier.pkl')
     print('min average error={} on file: {}'.format(min_error, best_file))
 
 if __name__ == '__main__':
