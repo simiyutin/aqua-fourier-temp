@@ -2,8 +2,9 @@ package ru.ifmo.rain.garder;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -17,9 +18,9 @@ public class Main {
         int overlap;
 
         if (args.length == 1) {
-            sampleRate = 44100;
-            bufferSize = 1024 * 4;
-            overlap = 768 * 4;
+            sampleRate = FeatureExtractor.SAMPLE_RATE_DEFAULT;
+            bufferSize = FeatureExtractor.BUFFER_SIZE_DEFAULT;
+            overlap = FeatureExtractor.OVERLAP_DEFAULT;
         } else {
             sampleRate = Integer.parseInt(args[1]);
             bufferSize = Integer.parseInt(args[1]);
@@ -36,7 +37,7 @@ public class Main {
                     if (sample.endsWith(".wav")) {
                         System.out.println(sample);
                         File sampleFile = new File(directory, sample);
-                        List<Double> features = getFeatures(sampleFile, sampleRate, bufferSize, overlap);
+                        List<Double> features = FeatureExtractor.extract(sampleFile, sampleRate, bufferSize, overlap);
                         features.add(Double.valueOf(subNode));
                         matrix.add(features);
                     }
@@ -45,14 +46,9 @@ public class Main {
         }
 
         writeToCSV(matrix);
-
     }
 
-    private static List<Double> getFeatures(File file, int sampleRate, int bufferSize, int overlap) throws Exception {
-        double[][] data = new SpectrumExtractor(sampleRate, bufferSize, overlap).getRawData(file);
-        List<Double> features = Arrays.stream(new BPMRawDataProcessor().processRawData(data)).boxed().collect(Collectors.toList());
-        return features;
-    }
+
 
     private static void writeToCSV(List<List<Double>> entities) throws Exception {
 
