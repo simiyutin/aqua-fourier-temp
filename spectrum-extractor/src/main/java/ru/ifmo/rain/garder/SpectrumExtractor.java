@@ -21,9 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SpectrumExtractor implements PitchDetectionHandler {
-    private float sampleRate = 44100;
+    private int sampleRate = 44100;
     private int bufferSize = 1024 * 4;
     private int overlap = 768 * 4;
+
+    public SpectrumExtractor(int sampleRate, int bufferSize, int overlap) {
+        this.sampleRate = sampleRate;
+        this.bufferSize = bufferSize;
+        this.overlap = overlap;
+    }
 
     private PitchProcessor.PitchEstimationAlgorithm algo;
     private double pitch;

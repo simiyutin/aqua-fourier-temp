@@ -7,9 +7,23 @@ import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        if (args.length != 1) {
-            System.out.println("Usage: ./run.sh <dataset_root_path>");
+        if (args.length != 1 && args.length != 4) {
+            System.out.println("1 parameter or <path, sampleRate, bufferSize, overlap>");
             return;
+        }
+
+        int sampleRate;
+        int bufferSize;
+        int overlap;
+
+        if (args.length == 1) {
+            sampleRate = 44100;
+            bufferSize = 1024 * 4;
+            overlap = 768 * 4;
+        } else {
+            sampleRate = Integer.parseInt(args[1]);
+            bufferSize = Integer.parseInt(args[1]);
+            overlap = Integer.parseInt(args[2]);
         }
 
         String datasetRoot = args[0];
@@ -22,7 +36,7 @@ public class Main {
                     if (sample.endsWith(".wav")) {
                         System.out.println(sample);
                         File sampleFile = new File(directory, sample);
-                        List<Double> features = getFeatures(sampleFile);
+                        List<Double> features = getFeatures(sampleFile, sampleRate, bufferSize, overlap);
                         features.add(Double.valueOf(subNode));
                         matrix.add(features);
                     }
@@ -34,8 +48,8 @@ public class Main {
 
     }
 
-    private static List<Double> getFeatures(File file) throws Exception {
-        double[][] data = new SpectrumExtractor().getRawData(file);
+    private static List<Double> getFeatures(File file, int sampleRate, int bufferSize, int overlap) throws Exception {
+        double[][] data = new SpectrumExtractor(sampleRate, bufferSize, overlap).getRawData(file);
         List<Double> features = Arrays.stream(new BPMRawDataProcessor().processRawData(data)).boxed().collect(Collectors.toList());
         return features;
     }
