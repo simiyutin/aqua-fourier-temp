@@ -3,4 +3,4 @@
 /**/.gradle
 /**/build
 /**/calculated_features*
-/**/dataset
+/**/data/**/*

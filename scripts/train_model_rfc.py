@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 import numpy as np
 import pandas
 from sklearn.ensemble import RandomForestClassifier
@@ -53,7 +55,7 @@ def make_regression(path):
 
 
 def do_work(worker):
-    dir = '../../spectrum-extractor/calculated_features/'
+    dir = '../data/extracted_data/'
     files = os.listdir(dir)
     min_error = np.inf
     best_file = None

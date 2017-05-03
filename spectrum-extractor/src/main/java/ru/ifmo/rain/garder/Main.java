@@ -3,13 +3,16 @@ package ru.ifmo.rain.garder;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         if (args.length != 2 && args.length != 5) {
-            System.out.println("<path, max_files_for_class> or <path, sampleRate, bufferSize, overlap, max_files_for_class>");
+            System.out.println(String.format(
+                    "required <path, max_files_for_class> or <path, max_files_for_class, sampleRate, bufferSize, overlap>" +
+                            ", got %s", Arrays.toString(args)));
             return;
         }
 
