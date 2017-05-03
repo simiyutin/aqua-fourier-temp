@@ -6,7 +6,7 @@ apply plugin: 'application'
 
 sourceCompatibility = 1.8
 
-mainClassName = 'ru.ifmo.rain.garder.SpectrumExtractor'
+mainClassName = 'ru.ifmo.rain.garder.Main'
 
 repositories {
     mavenCentral()
