@@ -36,8 +36,6 @@ public class SpectrumExtractor implements PitchDetectionHandler {
 
 
         AudioDispatcher dispatcher = AudioDispatcherFactory.fromFile(audioFile, bufferSize, overlap);
-        AudioFormat format = AudioSystem.getAudioFileFormat(audioFile).getFormat();
-        dispatcher.addAudioProcessor(new AudioPlayer(format));
         algo = PitchProcessor.PitchEstimationAlgorithm.DYNAMIC_WAVELET;
         dispatcher.addAudioProcessor(new PitchProcessor(algo, sampleRate, bufferSize, this));
         dispatcher.addAudioProcessor(fftProcessor);
