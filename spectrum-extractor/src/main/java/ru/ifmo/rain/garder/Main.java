@@ -8,8 +8,8 @@ import java.util.Locale;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        if (args.length != 1 && args.length != 4) {
-            System.out.println("1 parameter or <path, sampleRate, bufferSize, overlap>");
+        if (args.length != 2 && args.length != 5) {
+            System.out.println("<path, max_files_for_class> or <path, sampleRate, bufferSize, overlap, max_files_for_class>");
             return;
         }
 
@@ -17,23 +17,36 @@ public class Main {
         int bufferSize;
         int overlap;
 
-        if (args.length == 1) {
+        if (args.length == 2) {
             sampleRate = FeatureExtractor.SAMPLE_RATE_DEFAULT;
             bufferSize = FeatureExtractor.BUFFER_SIZE_DEFAULT;
             overlap = FeatureExtractor.OVERLAP_DEFAULT;
         } else {
-            sampleRate = Integer.parseInt(args[1]);
-            bufferSize = Integer.parseInt(args[1]);
-            overlap = Integer.parseInt(args[2]);
+            sampleRate = Integer.parseInt(args[2]);
+            bufferSize = Integer.parseInt(args[3]);
+            overlap = Integer.parseInt(args[4]);
         }
 
+
         String datasetRoot = args[0];
+        int maxFiles = Integer.parseInt(args[1]);
+        System.out.println(String.format("root: %s", datasetRoot));
+        System.out.println(String.format("maxFiles: %s", maxFiles));
+        System.out.println(String.format("sampleRate: %s", sampleRate));
+        System.out.println(String.format("bufferSize: %s", bufferSize));
+        System.out.println(String.format("overlap: %s", overlap));
+
+
         File root = new File(datasetRoot);
         List<List<Double>> matrix = new ArrayList<>();
         for (String subNode : root.list()) {
             File directory = new File(root, subNode);
+            int filesProcessed = 0;
             if (directory.isDirectory()) {
                 for (String sample : directory.list()) {
+                    if (filesProcessed++ > maxFiles) {
+                        break;
+                    }
                     if (sample.endsWith(".wav")) {
                         System.out.println(sample);
                         File sampleFile = new File(directory, sample);
