@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 import os
 
 
-def classify(path):
+def predict(path, classifier, metric):
     data = pandas.read_csv(path, header=None).values
     values = data[:, :-1]
     labels = data[:, -1]
@@ -24,27 +24,50 @@ def classify(path):
     labels = np.array(valid_labels)
     print('rows after filtering: {}'.format(values.shape[0]))
 
-    values_train, values_test, labels_train, labels_test = train_test_split(values, labels, test_size=0.1)
+    values_train, values_test, labels_train, labels_test = train_test_split(values, labels, test_size=0.2, random_state=42)
 
-    cls = RandomForestClassifier()
+    cls = classifier
     cls.fit(values_train, labels_train)
 
     predictions = cls.predict(values_test)
-    print(predictions)
-    return accuracy_score(labels_test, predictions)
+    print('test data: {}'.format(labels_test))
+    print('predicted data: {}'.format(predictions))
 
-if __name__ == '__main__':
+    return metric(labels_test, predictions)
+
+
+def avgdiff(labels_test, labels_predict):
+    return np.average(np.abs(labels_test - labels_predict))
+
+
+def make_classification(path):
+    classifier = RandomForestClassifier(n_estimators=50, criterion='entropy')
+    metric = avgdiff
+    return predict(path, classifier, metric)
+
+
+def make_regression(path):
+    classifier = SVR(kernel='sigmoid')
+    metric = avgdiff
+    return predict(path, classifier, metric)
+
+
+def do_work(worker):
     dir = '../../spectrum-extractor/calculated_features/'
     files = os.listdir(dir)
-    max_accuracy = 0
+    min_error = np.inf
     best_file = None
     for file in files:
-        new_accuracy = classify(dir + file)
-        print(new_accuracy)
-        if new_accuracy > max_accuracy:
+        new_error = worker(dir + file)
+        print('file: {}\naverage error = {}'.format(file, new_error))
+        if new_error < min_error:
             best_file = file
-            max_accuracy = new_accuracy
+            min_error = new_error
 
-    print('max accuracy={} on file: {}'.format(max_accuracy, best_file))
+    print('min average error={} on file: {}'.format(min_error, best_file))
+
+if __name__ == '__main__':
+    # do_work(make_regression)
+    do_work(make_classification)
 
 
