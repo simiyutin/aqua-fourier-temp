@@ -68,8 +68,7 @@ def do_work(worker):
             best_file = file
             min_error = new_error
             best_cls = cls
-
-    joblib.dump(best_cls, 'random_forest_classifier.pkl')
+    joblib.dump(best_cls, 'best_classifier_' + best_file[0:-4] + '.pkl')
     print('min average error={} on file: {}'.format(min_error, best_file))
 
 if __name__ == '__main__':
