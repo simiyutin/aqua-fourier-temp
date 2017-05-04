@@ -123,7 +123,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     data.remove(data.size() - 1);
                 }
                 while (data.size() < NUMBER_OF_FEATURES) {
-                    data.add(.0);
+                   data.add(.0);
                 }
 
                 StringBuilder converted = new StringBuilder();
