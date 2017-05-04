@@ -22,6 +22,7 @@ def predict(path, classifier, metric):
             valid_values.append(row)
             valid_labels.append(label)
 
+    print('number of features: {}'.format(values.shape[1]))
     print('rows before filtering: {}'.format(values.shape[0]))
     values = np.array(valid_values)
     labels = np.array(valid_labels)

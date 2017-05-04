@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class FeatureExtractor {
 
@@ -22,13 +21,13 @@ public class FeatureExtractor {
 
     private static List<Double> getFeatures(File file, int sampleRate, int bufferSize, int overlap) throws Exception {
         double[][] data = new SpectrumExtractor(sampleRate, bufferSize, overlap).getRawData(file);
-//        List<Double> features = Arrays.stream(new BPMRawDataProcessor().processRawData(data)).boxed().collect(Collectors.toList());
-        double[] processedData = new BPMRawDataProcessor().processRawData(data);
         List<Double> features = new ArrayList<>();
-        for (double d : processedData) {
+//        features.addAll(Arrays.stream(new BPMRawDataProcessor().processRawData(data)).boxed().collect(Collectors.toList()));
+//        features.addAll(Arrays.stream(new AverageFrequencyDataProcessor().processRawData(data)).boxed().collect(Collectors.toList()));
+        double[] processed = new AverageFrequencyDataProcessor().processRawData(data);
+        for (double d : processed) {
             features.add(d);
         }
-
         return features;
     }
 

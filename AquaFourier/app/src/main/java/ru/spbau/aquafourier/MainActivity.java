@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +34,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private static final int SAMPLING_RATE = 44100;
-    private static final long RECORD_TIME_MILLIS = TimeUnit.SECONDS.toMillis(3);
+    private static final long RECORD_TIME_MILLIS = TimeUnit.SECONDS.toMillis(4);
     private static final String SERVER_URL = "http://91.121.160.193:5000/";
 
     private Button measureButton;
@@ -109,12 +110,19 @@ public class MainActivity extends Activity implements View.OnClickListener {
             protected String doInBackground(Void... params) {
                 List<Double> data;
                 try {
-                    data = FeatureExtractor.extract(new File(filename));
+                    data = FeatureExtractor.extract(new File(filename), 44100, 2048, 1536);
                 } catch (Exception e) {
                     throw new AssertionError(e);
                 }
 
                 Log.i(LOG_TAG, "data.size() = " + data.size());
+
+                while (data.size() > 256) {
+                    data.remove(data.size() - 1);
+                }
+                while (data.size() < 256) {
+                    data.add(.0);
+                }
 
                 StringBuilder converted = new StringBuilder();
                 for (int i = 0; i < data.size(); i++) {
@@ -129,8 +137,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
             @Override
             protected void onPostExecute(String s) {
-//                sendRequest(s);
-                sendRequest("1 2 3");
+                sendRequest(s);
             }
         }.execute();
     }

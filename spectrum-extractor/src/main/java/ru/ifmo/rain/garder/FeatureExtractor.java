@@ -1,6 +1,7 @@
 package ru.ifmo.rain.garder;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,8 +22,16 @@ public class FeatureExtractor {
 
     private static List<Double> getFeatures(File file, int sampleRate, int bufferSize, int overlap) throws Exception {
         double[][] data = new SpectrumExtractor(sampleRate, bufferSize, overlap).getRawData(file);
-        List<Double> features = Arrays.stream(new BPMRawDataProcessor().processRawData(data)).boxed().collect(Collectors.toList());
-        features.addAll(Arrays.stream(new AverageFrequencyDataProcessor().processRawData(data)).boxed().collect(Collectors.toList()));
+        List<Double> features = new ArrayList<>();
+
+//        for (double val : new BPMRawDataProcessor().processRawData(data)) {
+//            features.add(val);
+//        }
+
+        for (double val : new AverageFrequencyDataProcessor().processRawData(data)) {
+            features.add(val);
+        }
+
         return features;
     }
 

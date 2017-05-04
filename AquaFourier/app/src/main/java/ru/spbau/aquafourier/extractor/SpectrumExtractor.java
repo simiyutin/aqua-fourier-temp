@@ -33,6 +33,7 @@ public class SpectrumExtractor implements PitchDetectionHandler {
     final List<Double> pitches = new ArrayList<>();
 
     double[][] getRawData(File audioFile) throws IOException {
+
         AudioDispatcher dispatcher = AudioDispatcherFactory.fromPipe(audioFile.getAbsolutePath(), sampleRate, bufferSize, overlap);
         algo = PitchProcessor.PitchEstimationAlgorithm.DYNAMIC_WAVELET;
         dispatcher.addAudioProcessor(new PitchProcessor(algo, sampleRate, bufferSize, this));
