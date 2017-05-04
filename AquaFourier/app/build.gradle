@@ -28,4 +28,5 @@ dependencies {
     compile 'com.android.support:support-v4:25.3.1'
     testCompile 'junit:junit:4.12'
     compile files('libs/TarsosDSP-Android-latest.jar')
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.0'
 }
