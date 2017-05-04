@@ -4,31 +4,42 @@ import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.io.jvm.AudioDispatcherFactory;
-import be.tarsos.dsp.io.jvm.AudioPlayer;
 import be.tarsos.dsp.pitch.PitchDetectionHandler;
 import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchProcessor;
 import be.tarsos.dsp.util.fft.FFT;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpectrumExtractor implements PitchDetectionHandler {
+public class SpectrumExtractor extends JFrame implements PitchDetectionHandler {
     private int sampleRate = 44100;
     private int bufferSize = 1024 * 4;
     private int overlap = 768 * 4;
 
+    SpectrogramPanel panel = new SpectrogramPanel();
+
     public SpectrumExtractor(int sampleRate, int bufferSize, int overlap) {
+        this.setLayout(new BorderLayout());
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setTitle("Spectrogram");
         this.sampleRate = sampleRate;
         this.bufferSize = bufferSize;
         this.overlap = overlap;
+
+        JPanel otherContainer = new JPanel(new BorderLayout());
+        otherContainer.add(panel,BorderLayout.CENTER);
+        otherContainer.setBorder(new TitledBorder("3. Utter a sound (whistling works best)"));
+
+        this.add(otherContainer,BorderLayout.CENTER);
     }
 
     private PitchProcessor.PitchEstimationAlgorithm algo;
@@ -38,7 +49,6 @@ public class SpectrumExtractor implements PitchDetectionHandler {
     final List<Double> pitches = new ArrayList<>();
 
     double[][] getRawData(File audioFile) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
-
         AudioDispatcher dispatcher = AudioDispatcherFactory.fromFile(audioFile, bufferSize, overlap);
         algo = PitchProcessor.PitchEstimationAlgorithm.DYNAMIC_WAVELET;
         dispatcher.addAudioProcessor(new PitchProcessor(algo, sampleRate, bufferSize, this));
@@ -89,7 +99,48 @@ public class SpectrumExtractor implements PitchDetectionHandler {
             fft.modulus(transformbuffer, amplitudes);
             SpectrumExtractor.this.amplitudes.add(amplitudes);
             SpectrumExtractor.this.pitches.add(pitch);
+
+            panel.drawFFT(pitch, amplitudes,fft);
+            panel.repaint();
+
             return true;
         }
     };
+
+
+    public static void main(final String[] args) throws InterruptedException,
+            InvocationTargetException {
+        if (args.length != 4) {
+            System.out.println("Mindless Self Indulgence - Stupid MF");
+            return;
+        }
+
+        final String filename = args[0];
+        final int sampleRate = Integer.parseInt(args[1]);
+        final int bufferSize = Integer.parseInt(args[2]);
+        final int overlap = Integer.parseInt(args[3]);
+
+        SwingUtilities.invokeAndWait(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    UIManager.setLookAndFeel(UIManager
+                            .getSystemLookAndFeelClassName());
+                } catch (Exception e) {
+                    // ignore failure to set default look en feel;
+                }
+                SpectrumExtractor frame = new SpectrumExtractor(sampleRate, bufferSize, overlap);
+                frame.pack();
+                frame.setSize(750, 750);
+                frame.setVisible(true);
+                new Thread(() -> {
+                    try {
+                        frame.getRawData(new File(filename));
+                    } catch (Exception e) {
+                        throw new AssertionError(e);
+                    }
+                }).start();
+            }
+        });
+    }
 }
