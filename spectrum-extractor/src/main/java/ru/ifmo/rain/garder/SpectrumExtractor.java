@@ -92,30 +92,4 @@ public class SpectrumExtractor implements PitchDetectionHandler {
             return true;
         }
     };
-
-//    public static void main(String[] arg) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-//        if (arg.length != 1) {
-//            System.out.println("Usage: ./run.sh <filename.wav>");
-//            return;
-//        }
-//        String filename = arg[0];
-//        double[][] data = new SpectrumExtractor().getRawData(filename);
-//
-//        PrintWriter pw = new PrintWriter(filename.substring(0, filename.length() - 4) + "-spectrum.csv");
-//        pw.print("pitch");
-//        for (int i = 0; i + 1 < data[0].length; i++) {
-//            pw.print(",a" + i);
-//        }
-//        pw.println();
-//        for (int i = 0; i < data.length; i++) {
-//            for (int j = 0; j < data[i].length; j++) {
-//                if (j != 0) {
-//                    pw.print(",");
-//                }
-//                pw.printf("%.3f", data[i][j]);
-//            }
-//            pw.println();
-//        }
-//        pw.close();
-//    }
 }

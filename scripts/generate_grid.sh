@@ -1,4 +1,4 @@
-MAX_FILES=35
+MAX_FILES=70
 SAMPLE_RATE=44100
 SPECTRUM_EXTRACTOR_DIR=../spectrum-extractor/
 PROCESSED_DATA_DIR=../data/processed_data/
