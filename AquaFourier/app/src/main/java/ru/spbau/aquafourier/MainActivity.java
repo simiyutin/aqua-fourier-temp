@@ -37,7 +37,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private static final int SAMPLING_RATE = 44100;
     private static final long RECORD_TIME_MILLIS = TimeUnit.SECONDS.toMillis(4);
     private static final String SERVER_URL = "http://91.121.160.193:5000/";
-    private static final int NUMBER_OF_FEATURES = 2049;
+    private static final int NUMBER_OF_FEATURES = 1024;
 
     private Button measureButton;
     private TextView temperatureText;
@@ -112,7 +112,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             protected String doInBackground(Void... params) {
                 List<Double> data;
                 try {
-                    data = FeatureExtractor.extract(new File(filename), 44100, 2048, 1536);
+                    data = FeatureExtractor.extract(new File(filename), 44100, 6048, 2100);
                 } catch (Exception e) {
                     throw new AssertionError(e);
                 }
