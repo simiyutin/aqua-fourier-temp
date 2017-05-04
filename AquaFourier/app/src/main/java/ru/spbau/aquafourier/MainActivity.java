@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,6 +37,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private static final int SAMPLING_RATE = 44100;
     private static final long RECORD_TIME_MILLIS = TimeUnit.SECONDS.toMillis(4);
     private static final String SERVER_URL = "http://91.121.160.193:5000/";
+    private static final int NUMBER_OF_FEATURES = 2049;
 
     private Button measureButton;
     private TextView temperatureText;
@@ -117,10 +119,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
                 Log.i(LOG_TAG, "data.size() = " + data.size());
 
-                while (data.size() > 256) {
+                while (data.size() > NUMBER_OF_FEATURES) {
                     data.remove(data.size() - 1);
                 }
-                while (data.size() < 256) {
+                while (data.size() < NUMBER_OF_FEATURES) {
                     data.add(.0);
                 }
 
@@ -163,7 +165,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     String response = br.readLine();
                     return response;
                 } catch (Exception e) {
-                    throw new AssertionError(e);
+                    return null;
                 }
             }
 
@@ -175,7 +177,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     private void showTemperature(String temperature) {
-        temperatureText.setText(temperature);
+        if (temperature == null) {
+            temperatureText.setText("Try again");
+            Toast.makeText(this, "Check your internet connection", Toast.LENGTH_SHORT).show();
+        } else {
+            temperatureText.setText(temperature);
+        }
 //        temperatureText.setText(String.format(Locale.US, "%.1f°C", temperature));
         measureButton.setEnabled(true);
     }
