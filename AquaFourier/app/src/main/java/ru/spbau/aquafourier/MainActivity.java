@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,23 +109,50 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void prepareData(final String filename) {
         temperatureText.setText(R.string.processing);
         new AsyncTask<Void, Void, String>() {
+            private int extractorRate = 44100;
+            private int extractorBufferSize = 1024 * 4;
+            private int extractorOverlap = 768 * 3;
+
+            private void getParams() throws IOException {
+                URL url = new URL(SERVER_URL + "get_params");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setDoInput(true);
+
+                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String response = br.readLine();
+
+                Log.i("LOG_TAG", "params: " + response);
+
+                String[] params = response.split(" ");
+                extractorRate = Integer.parseInt(params[0]);
+                extractorBufferSize = Integer.parseInt(params[1]);
+                extractorOverlap = Integer.parseInt(params[2]);
+            }
+
             @Override
             protected String doInBackground(Void... params) {
                 List<Double> data;
                 try {
-                    data = FeatureExtractor.extract(new File(filename), 44100, 6048, 2100);
+                    getParams();
+                } catch (IOException e) {
+                    Log.i(LOG_TAG, "Couldn't retreive params", e);
+                }
+
+                try {
+                    data = FeatureExtractor.extract(new File(filename), extractorRate, extractorBufferSize, extractorOverlap);
                 } catch (Exception e) {
                     throw new AssertionError(e);
                 }
 
                 Log.i(LOG_TAG, "data.size() = " + data.size());
 
-                while (data.size() > NUMBER_OF_FEATURES) {
-                    data.remove(data.size() - 1);
-                }
-                while (data.size() < NUMBER_OF_FEATURES) {
-                   data.add(.0);
-                }
+//                while (data.size() > NUMBER_OF_FEATURES) {
+//                    data.remove(data.size() - 1);
+//                }
+//                while (data.size() < NUMBER_OF_FEATURES) {
+//                   data.add(.0);
+//                }
 
                 StringBuilder converted = new StringBuilder();
                 for (int i = 0; i < data.size(); i++) {
