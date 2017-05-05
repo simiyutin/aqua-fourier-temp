@@ -99,9 +99,9 @@ public class SpectrumExtractor extends JFrame implements PitchDetectionHandler {
             fft.modulus(transformbuffer, amplitudes);
             SpectrumExtractor.this.amplitudes.add(amplitudes);
             SpectrumExtractor.this.pitches.add(pitch);
-
-            panel.drawFFT(pitch, amplitudes,fft);
-            panel.repaint();
+//
+//            panel.drawFFT(pitch, amplitudes,fft);
+//            panel.repaint();
 
             return true;
         }

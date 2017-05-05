@@ -42,8 +42,11 @@ public class Main {
 
         File root = new File(datasetRoot);
         List<List<Double>> matrix = new ArrayList<>();
-        for (String subNode : root.list()) {
-            File directory = new File(root, subNode);
+        for (String temperatureFolder : root.list()) {
+            if (temperatureFolder.equals("ignored")) {
+                continue;
+            }
+            File directory = new File(root, temperatureFolder);
             int filesProcessed = 0;
             if (directory.isDirectory()) {
                 for (String sample : directory.list()) {
@@ -55,7 +58,7 @@ public class Main {
                         System.out.println(sample);
                         File sampleFile = new File(directory, sample);
                         List<Double> features = FeatureExtractor.extract(sampleFile, sampleRate, bufferSize, overlap);
-                        features.add(Double.valueOf(subNode));
+                        features.add(Double.valueOf(temperatureFolder));
                         matrix.add(features);
                     }
                 }

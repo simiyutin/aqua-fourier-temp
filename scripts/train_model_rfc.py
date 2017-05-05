@@ -1,13 +1,25 @@
 #! /usr/bin/python3
 
+import os
+import shutil
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVR
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
 from sklearn.externals import joblib
-import os
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVR
+
+
+def savefig(row, label):
+    X = np.arange(row.size)
+    plt.plot(X, row)
+    plt.title('T = {}'.format(label))
+    x1, x2, y1, y2 = plt.axis()
+    plt.axis((x1, x2, 0, 15))
+    plt.savefig('pics/temp={}____{}.png'.format(label, np.sum(row)))
+    plt.close()
 
 
 def predict(path, classifier, metric):
@@ -22,6 +34,15 @@ def predict(path, classifier, metric):
             valid_values.append(row)
             valid_labels.append(label)
 
+
+
+    # for row, label in zip(values, labels):
+    #     savefig(row, label)
+    #
+    # return 1.
+
+    # values = values[:, :values.shape[1] // 2]
+
     print('number of features: {}'.format(values.shape[1]))
     print('rows before filtering: {}'.format(values.shape[0]))
     values = np.array(valid_values)
@@ -29,7 +50,6 @@ def predict(path, classifier, metric):
     print('rows after filtering: {}'.format(values.shape[0]))
 
     values_train, values_test, labels_train, labels_test = train_test_split(values, labels, test_size=0.2, random_state=42)
-
     cls = classifier
     cls.fit(values_train, labels_train)
 
@@ -51,9 +71,9 @@ def make_classification(path):
 
 
 def make_regression(path):
-    classifier = SVR(kernel='sigmoid')
+    classifier = SVR(kernel='linear', C=1)
     metric = avgdiff
-    return predict(path, classifier, metric)
+    return predict(path, classifier, metric), classifier
 
 
 def do_work(worker):
@@ -64,16 +84,21 @@ def do_work(worker):
     best_cls = None
     for file in files:
         new_error, cls = worker(dir + file)
-        print('file: {}\naverage error = {}'.format(file, new_error))
+        print('file: {}'.format(file))
+        print('average error = {}'.format(new_error))
+        print('min avg error = {}'.format(min_error))
         if new_error < min_error:
             best_file = file
             min_error = new_error
             best_cls = cls
-    joblib.dump(best_cls, 'best_classifier_' + best_file[0:-4] + '.pkl')
+
+    shutil.rmtree('../data/classifier/')
+    os.makedirs('../data/classifier/')
+    joblib.dump(best_cls, '../data/classifier/' + best_file[0:-4] + '.pkl')
     print('min average error={} on file: {}'.format(min_error, best_file))
 
 if __name__ == '__main__':
-    # do_work(make_regression)
-    do_work(make_classification)
+    do_work(make_regression)
+    # do_work(make_classification)
 
 

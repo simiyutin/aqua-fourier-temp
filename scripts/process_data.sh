@@ -3,9 +3,9 @@
 SAMPLE_LENGTH=3 #secs
 TRIM_DURATION=10 #secs
 
-RAW_DATA_DIR=../data/raw_data/
-PROCESSED_DATA_DIR=../data/processed_data/
-EXTRACTED_DATA_DIR=../data/extracted_data/
+RAW_DATA_DIR=../$1/raw_data/
+PROCESSED_DATA_DIR=../$1/processed_data/
+EXTRACTED_DATA_DIR=../$1/extracted_data/
 
 rm -r $PROCESSED_DATA_DIR
 mkdir $PROCESSED_DATA_DIR
