@@ -1,4 +1,4 @@
-# aqua-fourier-temp
+# Aqua Fourier
 Как тренировать модель:
 * Кладем файлы в .mp3 или .wav формате в директории вида /data/raw_data/<температура воды>
 * Запускаем скрипт /scripts/train_compile.sh
