@@ -7,3 +7,6 @@
 Как собрать Android-приложение:
 * Установить android-sdk
 * Собрать AquaFourier/build.gradle
+
+Запуск сервера:
+* Запускаем скрипт /server/server.py (python3). 
