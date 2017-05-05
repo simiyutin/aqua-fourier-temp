@@ -8,5 +8,5 @@
 * Установить android-sdk
 * Собрать AquaFourier/build.gradle
 
-Запуск сервера:
+Как запустить сервер:
 * Запускаем скрипт /server/server.py (python3). 
